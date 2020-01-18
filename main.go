@@ -1,30 +1,58 @@
+//go:generate go run -tags=!dev generate_assets.go
+
 package main
 
 import (
-	"database/sql"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 
-	// Import for the side effect on database/sql
-	_ "github.com/mattn/go-sqlite3"
-
-	packr "github.com/gobuffalo/packr/v2"
-	migrate "github.com/rubenv/sql-migrate"
+    "github.com/bbkane/hello_vfsgen/data"
 )
 
+// similar to https://github.com/rakyll/statik/blob/74b078749dc19d4fead4faf52bf8f2b88b9e7a74/fs/fs_test.go#L257
+func testReadDir(fs http.FileSystem) {
+
+	file, err := fs.Open("/")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// This returns an empty list
+	files, err := file.Readdir(0)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// https://github.com/rakyll/statik/blob/74b078749dc19d4fead4faf52bf8f2b88b9e7a74/fs/fs.go#L164
+    // says directory listing is disabled. It seems to work in tests
+
+    // prints an empty list
+	fmt.Printf("readdir: %v\n", files)
+}
+
+func testReadFile(httpFS http.FileSystem) {
+	// Access individual files by their paths.
+	r, err := httpFS.Open("/migrations/2019_10_12.1.sql")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer r.Close()
+	contents, err := ioutil.ReadAll(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+    // indicates that there is a file
+	fmt.Println(string(contents))
+}
+
 func main() {
-	migrations := &migrate.PackrMigrationSource{
-		Box: packr.New("migrations", "./migrations"),
-	}
 
-	db, err := sql.Open("sqlite3", "db.db")
-	if err != nil {
-		log.Fatalf("%v\n", err)
-	}
+    // check that at least one file made it
+	testReadFile(data.Assets)
 
-	n, err := migrate.Exec(db, "sqlite3", migrations, migrate.Up)
-	if err != nil {
-		log.Fatalf("%v\n", err)
-	}
-	fmt.Printf("Applied %d migrations!\n", n)
+    // yet still no files are shown in the directory
+	testReadDir(data.Assets)
 }
