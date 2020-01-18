@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	// Import for the side effect on database/sql
 	_ "github.com/mattn/go-sqlite3"
@@ -12,28 +13,18 @@ import (
 )
 
 func main() {
-	// migrations := &migrate.MemoryMigrationSource{
-	// 	Migrations: []*migrate.Migration{
-	// 		&migrate.Migration{
-	// 			Id:   "123",
-	// 			Up:   []string{"CREATE TABLE people (id int)"},
-	// 			Down: []string{"DROP TABLE people"},
-	// 		},
-	// 	},
-	// }
-
 	migrations := &migrate.PackrMigrationSource{
 		Box: packr.New("migrations", "./migrations"),
 	}
 
 	db, err := sql.Open("sqlite3", "db.db")
 	if err != nil {
-		// Handle errors!
+		log.Fatalf("%v\n", err)
 	}
 
 	n, err := migrate.Exec(db, "sqlite3", migrations, migrate.Up)
 	if err != nil {
-		// Handle errors!
+		log.Fatalf("%v\n", err)
 	}
 	fmt.Printf("Applied %d migrations!\n", n)
 }
