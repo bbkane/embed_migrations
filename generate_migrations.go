@@ -10,11 +10,11 @@ import (
 )
 
 func main() {
-	err := vfsgen.Generate(data.Assets, vfsgen.Options{
-        Filename: "data/assets_vfsdata.go",
+	err := vfsgen.Generate(data.Migrations, vfsgen.Options{
+        Filename: "data/migrations_vfsdata.go",
 		PackageName:  "data",
 		BuildTags:    "!dev",
-		VariableName: "Assets",
+		VariableName: "Migrations",
 	})
 	if err != nil {
 		log.Fatalln(err)

@@ -19,7 +19,7 @@ https://github.com/golang/go/issues/36025
 
 # sql-migrate
 
-https://github.com/rubenv/sql-migrat://github.com/rubenv/sql-migrate
+https://github.com/rubenv/sql-migrate/
 
 # vfsgen
 
