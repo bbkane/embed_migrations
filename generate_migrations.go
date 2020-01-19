@@ -5,7 +5,7 @@ package main
 import (
 	"log"
 
-    "github.com/bbkane/hello_vfsgen/data"
+    "github.com/bbkane/embed_migrations/data"
 	"github.com/shurcooL/vfsgen"
 )
 

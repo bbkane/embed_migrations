@@ -41,8 +41,7 @@ That builds a binary that reads from the filesystem
 ## Package for prod
 
 ```
-# Need -tags=dev so it can find the data package
-go run -tags=dev generate_assets.go // or go generate
+go generate  # embed migration dir into code
 go run main.go
 ```
 

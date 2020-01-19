@@ -1,4 +1,4 @@
-module github.com/bbkane/hello_vfsgen
+module github.com/bbkane/embed_migrations
 
 go 1.12
 

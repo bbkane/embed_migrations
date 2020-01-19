@@ -12,7 +12,7 @@ import (
 
 	migrate "github.com/rubenv/sql-migrate"
 
-    "github.com/bbkane/hello_vfsgen/data"
+    "github.com/bbkane/embed_migrations/data"
 )
 
 func main() {
