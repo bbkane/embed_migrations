@@ -1,47 +1,49 @@
-# SQLite
+# embed_migrations
+
+`embed_migrations` is how I finally figured out how to embed sql migration
+files into a go app and use them from the binary.
+
+## Dependencies
+
+[go-sqlite3](https://github.com/mattn/go-sqlite3) is a CGO app. There's
+currently an [issue](https://github.com/golang/go/issues/36025) on GitHub about
+the linker errors that building CGO apps creates.
 
 ```
 # ensure gcc is installed
-CGO_ENABLED=1 go get github.com/mattn/go-sqlite3
 CGO_ENABLED=1 go install github.com/mattn/go-sqlite3
-```
 
-## Clean SQLite
-
-```
+# clean in prep for rebuild if necessary
 go clean -i  github.com/mattn/go-sqlite3...
 ```
 
-
-## GitHub
-
-https://github.com/golang/go/issues/36025
-
-# sql-migrate
-
-https://github.com/rubenv/sql-migrate/
-
-# vfsgen
-
-https://github.com/shurcooL/vfsgen
+- [sql-migrate](https://github.com/rubenv/sql-migrate/) can read from an `http.FileSystem`
+- [vfsgen](https://github.com/shurcooL/vfsgen) can provide an `http.FileSystem`
 
 
-## Build in dev:
-
-```
-go build -tags=dev
-```
+## Read Migrations From Directory
 
 ```
 go run -tags=dev main.go
 ```
 
-That builds a binary that reads from the filesystem
-
-## Package for prod
+## Embed Migrations Directory Into Code
 
 ```
-go generate  # embed migration dir into code
+go generate
 go run main.go
 ```
+
+## Things that didn't work
+
+- [goose](https://github.com/pressly/goose), in its library form, can only read migrations from files
+- [migrate](https://github.com/golang-migrate/migrate) is not tested against SQLite3
+- [packr](https://github.com/gobuffalo/packr/tree/master/v2) never did find my files.
+- [statik](https://github.com/rakyll/statik) doesn't support directories (and doesn't mention this in the README.md, only in the code)
+- `sql-migrate` doesn't mention `http.FileSystem` in the README.md. I have a [pull request](https://github.com/rubenv/sql-migrate/pull/162) open for this
+- `vfsgen`'s `go generate` [example](https://github.com/shurcooL/vfsgen#go-generate-usage) didn't work for me. This project is the tweaks I made to get it working
+
+## Problems
+
+`vfsgen` doesn't seem to show up in `go.mod`.
 

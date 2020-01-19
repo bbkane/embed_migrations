@@ -1,4 +1,4 @@
-//go:generate go run -tags=dev generate_migrations.go
+//go:generate go run -tags=dev generate_data.go
 
 package main
 
