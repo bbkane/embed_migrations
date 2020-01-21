@@ -1,6 +1,6 @@
 // +build dev
 
-package data
+package clienthtml
 
 import (
 	"net/http"
@@ -10,4 +10,4 @@ import (
 )
 
 // Migrations contains SQL migrations
-var Migrations http.FileSystem = http.Dir(filepath.Join(projectroot.ProjectRootDir(), "data/migrations"))
+var ClientHtml http.FileSystem = http.Dir(filepath.Join(projectroot.ProjectRootDir(), "clienthtml/clienthtml"))

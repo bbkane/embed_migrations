@@ -5,6 +5,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+    "net/http"
 	"log"
 
 	// Import for the side effect on database/sql
@@ -12,12 +13,13 @@ import (
 
 	migrate "github.com/rubenv/sql-migrate"
 
-    "github.com/bbkane/embed_migrations/data"
+    "github.com/bbkane/embed_migrations/migrations"
+    "github.com/bbkane/embed_migrations/clienthtml"
 )
 
 func main() {
 	migrationSource := &migrate.HttpFileSystemMigrationSource{
-		FileSystem: data.Migrations,
+		FileSystem: migrations.Migrations,
 	}
 
     migrationList, err := migrationSource.FindMigrations()
@@ -36,4 +38,7 @@ func main() {
 		log.Fatalf("%v\n", err)
 	}
 	fmt.Printf("Applied %d migrations!\n", n)
+
+    http.Handle("/", http.FileServer(clienthtml.ClientHtml))
+    log.Fatal(http.ListenAndServe(":8080", nil))
 }

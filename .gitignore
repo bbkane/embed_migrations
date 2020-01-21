@@ -1,4 +1,4 @@
 *.db
 
-data/assets_vfsdata.go
+*_vfsdata.go
 hello_vfsgen
