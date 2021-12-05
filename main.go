@@ -4,41 +4,47 @@ package main
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
-    "net/http"
-	"log"
-
-	// Import for the side effect on database/sql
-	_ "github.com/mattn/go-sqlite3"
+	"os"
 
 	migrate "github.com/rubenv/sql-migrate"
-
-    "github.com/bbkane/embed_migrations/migrations"
-    "github.com/bbkane/embed_migrations/clienthtml"
+	"gopkg.in/gorp.v1"
+	_ "modernc.org/sqlite"
 )
 
-func main() {
-	migrationSource := &migrate.HttpFileSystemMigrationSource{
-		FileSystem: migrations.Migrations,
+//go:embed migrations
+var migrations embed.FS
+
+func run() error {
+	// HACK to use modernc/sqlite instead of mattn's CGO version
+	migrate.MigrationDialects["sqlite"] = gorp.SqliteDialect{}
+
+	migrations := &migrate.EmbedFileSystemMigrationSource{
+		FileSystem: migrations,
+		Root:       "migrations",
 	}
 
-    migrationList, err := migrationSource.FindMigrations()
-	if err != nil {
-		log.Fatal(err)
-	}
-    fmt.Printf("migrationList: %v\n", migrationList)
+	dbPath := "tmp.db"
 
-	db, err := sql.Open("sqlite3", "db.db")
+	db, err := sql.Open("sqlite", dbPath)
 	if err != nil {
-		log.Fatalf("%v\n", err)
+		return fmt.Errorf("open error: %s: %w", dbPath, err)
 	}
 
-	n, err := migrate.Exec(db, "sqlite3", migrationSource, migrate.Up)
+	n, err := migrate.Exec(db, "sqlite", migrations, migrate.Up)
 	if err != nil {
-		log.Fatalf("%v\n", err)
+
+		return fmt.Errorf("migrate error: %s: %w", dbPath, err)
 	}
 	fmt.Printf("Applied %d migrations!\n", n)
+	return nil
+}
 
-    http.Handle("/", http.FileServer(clienthtml.ClientHtml))
-    log.Fatal(http.ListenAndServe(":8080", nil))
+func main() {
+	err := run()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

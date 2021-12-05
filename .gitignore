@@ -1,4 +1,1 @@
-*.db
-
-*_vfsdata.go
-hello_vfsgen
+tmp*
