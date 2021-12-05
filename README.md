@@ -3,6 +3,18 @@
 `embed_migrations` is how I finally figured out how to embed sql migration
 files into a go app and use them from the binary.
 
+## Update: 2021-12-06
+
+I've updated to use go's new `embed` library/compiler directive and modernc.org/sqlite . No need for CGO or go generate any more!!
+
+Usage:
+
+```
+go run .
+```
+
+The rest of this README is no longer needed!
+
 ## Dependencies
 
 [go-sqlite3](https://github.com/mattn/go-sqlite3) is a CGO app. There's
@@ -46,4 +58,3 @@ go run main.go
 ## Problems
 
 `vfsgen` doesn't seem to show up in `go.mod`.
-
